@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
+import pandas
 from datetime import datetime
 
 
@@ -55,6 +56,32 @@ def load_user(user_id):
 # Créer les tables au démarrage
 with app.app_context():
     db.create_all()
+    # Vérifier si la base est vide
+    if Word.query.count() == 0:
+        print("📚 Base de données vide, importation des mots...")
+        try:
+            import pandas as pd
+            df = pd.read_excel('bdd.xlsx', sheet_name='Feuil2')
+            added = 0
+            for _, row in df.iterrows():
+                if pd.notna(row.iloc[1]) and pd.notna(row.iloc[2]):
+                    mot = str(row.iloc[1]).strip()
+                    definition = str(row.iloc[2]).strip()
+                    region = str(row.iloc[3]).strip() if pd.notna(row.iloc[3]) else 'توات'
+                    
+                    word = Word(
+                        word_arabic=mot,
+                        definition=definition,
+                        region=region,
+                        arabic_letter=mot[0] if mot else 'أ',
+                        status='approved'
+                    )
+                    db.session.add(word)
+                    added += 1
+            db.session.commit()
+            print(f"✅ {added} mots importés avec succès !")
+        except Exception as e:
+            print(f"⚠️ Erreur d'importation : {e}")
 
 # ===== PAGE D'ACCUEIL =====
 
