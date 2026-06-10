@@ -1,0 +1,198 @@
+<!-- templates/admin/dashboard.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - معجم توات</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* نفس خلفية index.html */
+        body {
+            background-image: url('/static/images/touat.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #2c3e50;
+    min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            color: #1a1a2e;
+        }
+        
+        .stat-card p {
+            color: #2c3e50;
+        }
+        
+        .admin-actions {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .admin-actions h2 {
+            color: #1a1a2e;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: rgba(248, 249, 250, 0.9);
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #2c3e50;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .action-btn i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #e74c3c !important;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b !important;
+        }
+          /* إزالة أي طبقات شفافة */
+.hero::before, .word-card::before, body::before {
+    display: none !important;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-header">
+            <h1>⚙️ لوحة تحكم المشرف</h1>
+            <p>مرحباً {{ current_user.username }}! آخر دخول: {{ current_user.created_at.strftime('%Y-%m-%d') }}</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-users" style="color: #3498db;"></i>
+                <h3>{{ total_users }}</h3>
+                <p>المستخدمين المسجلين</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-book" style="color: #2ecc71;"></i>
+                <h3>{{ total_words }}</h3>
+                <p>الكلمات في القاموس</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-inbox" style="color: #e74c3c;"></i>
+                <h3>{{ pending_submissions }}</h3>
+                <p>طلبات في الانتظار</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-chart-line" style="color: #f39c12;"></i>
+                <h3>نشيط</h3>
+                <p>حالة النظام</p>
+            </div>
+        </div>
+        
+        <div class="action-grid">
+    <a href="{{ url_for('admin_submissions') }}" class="action-btn">
+        <i class="fas fa-check-circle"></i>
+        <span>مراجعة الطلبات</span>
+    </a>
+    
+    <a href="{{ url_for('admin_users') }}" class="action-btn">
+        <i class="fas fa-user-cog"></i>
+        <span>إدارة المستخدمين</span>
+    </a>
+    
+    <a href="{{ url_for('submit_word') }}" class="action-btn">
+        <i class="fas fa-plus-circle"></i>
+        <span>إضافة كلمة جديدة</span>
+    </a>
+    
+    <a href="{{ url_for('index') }}" class="action-btn">
+        <i class="fas fa-globe"></i>
+        <span>عرض الموقع</span>
+    </a>
+</div>
+        <div style="text-align: center;">
+            <a href="/" class="back-link">← العودة للصفحة الرئيسية</a>
+            <a href="/logout" class="back-link btn-danger">🚪 تسجيل الخروج</a>
+        </div>
+    </div>
+</body>
+</html>

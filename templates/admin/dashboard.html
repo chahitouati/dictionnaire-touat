@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - معجم توات</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            color: #2c3e50;
+        }
+        
+        .admin-actions {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #2c3e50;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .action-btn i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .recent-activity {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        
+        .activity-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="logo">🏺 معجم اللهجة التواتية</a>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-cog"></i> لوحة التحكم</a>
+                <a href="{{ url_for('admin_submissions') }}"><i class="fas fa-inbox"></i> الطلبات</a>
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1><i class="fas fa-cog"></i> لوحة تحكم المشرف</h1>
+            <p>مرحباً، {{ current_user.username }}! آخر دخول: {{ current_user.created_at.strftime('%Y-%m-%d') }}</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-users" style="color: #3498db;"></i>
+                <h3>{{ total_users }}</h3>
+                <p>المستخدمين المسجلين</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-book" style="color: #2ecc71;"></i>
+                <h3>{{ total_words }}</h3>
+                <p>الكلمات في القاموس</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-inbox" style="color: #e74c3c;"></i>
+                <h3>{{ pending_count }}</h3>
+                <p>طلبات في الانتظار</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-chart-line" style="color: #f39c12;"></i>
+                <h3>نشيط</h3>
+                <p>حالة النظام</p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="admin-actions">
+            <h2><i class="fas fa-bolt"></i> الإجراءات السريعة</h2>
+            <div class="action-grid">
+                <a href="{{ url_for('admin_submissions') }}" class="action-btn">
+                    <i class="fas fa-check-circle"></i>
+                    <span>مراجعة الطلبات</span>
+                </a>
+                
+                <a href="/admin/users" class="action-btn">
+                    <i class="fas fa-user-cog"></i>
+                    <span>إدارة المستخدمين</span>
+                </a>
+                
+                <a href="{{ url_for('submit_word') }}" class="action-btn">
+        <i class="fas fa-plus-circle"></i>
+        <span>إضافة كلمة جديدة</span>
+    </a>
+                
+                <a href="/admin/backup" class="action-btn">
+                    <i class="fas fa-database"></i>
+                    <span>نسخ احتياطي</span>
+                </a>
+                
+                <a href="/admin/settings" class="action-btn">
+                  <i class="fas fa-sliders-h"></i>
+                  <span>الإعدادات</span>
+                </a>
+                
+                <a href="{{ url_for('index') }}" class="action-btn">
+                    <i class="fas fa-globe"></i>
+                    <span>عرض الموقع</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h2><i class="fas fa-history"></i> النشاط الأخير</h2>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-user-plus" style="color: #3498db;"></i>
+                    </div>
+                    <div>
+                        <p><strong>مستخدم جديد</strong> قام بالتسجيل</p>
+                        <small>منذ ساعتين</small>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-plus" style="color: #2ecc71;"></i>
+                    </div>
+                    <div>
+                        <p><strong>5 كلمات جديدة</strong> تمت إضافتها</p>
+                        <small>منذ 4 ساعات</small>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-check" style="color: #f39c12;"></i>
+                    </div>
+                    <div>
+                        <p><strong>3 طلبات</strong> تمت الموافقة عليها</p>
+                        <small>منذ يوم</small>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-download" style="color: #9b59b6;"></i>
+                    </div>
+                    <div>
+                        <p><strong>نسخة احتياطية</strong> تم إنشاؤها</p>
+                        <small>منذ 3 أيام</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Info -->
+        <div class="recent-activity" style="margin-top: 2rem;">
+            <h2><i class="fas fa-info-circle"></i> معلومات النظام</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <p><strong>إصدار التطبيق:</strong> 1.0.0</p>
+                    <p><strong>آخر تحديث:</strong> {{ current_date.strftime('%Y-%m-%d') }}</p>
+                    <p><strong>قاعدة البيانات:</strong> SQLite</p>
+                </div>
+                <div>
+                    <p><strong>المستخدم الحالي:</strong> {{ current_user.username }}</p>
+                    <p><strong>الدور:</strong> {{ current_user.role }}</p>
+                    <p><strong>المنطقة:</strong> {{ current_user.region or 'غير محدد' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 2rem; background: #2c3e50; color: white; margin-top: 3rem;">
+        <p>© 2026 معجم اللهجة التواتية - نظام الإدارة</p>
+        <p>تم التطوير باستخدام Flask</p>
+    </footer>
+
+    <script>
+        // تحديث الوقت
+        function updateTime() {
+            const now = new Date();
+            const timeElement = document.getElementById('current-time');
+            if (timeElement) {
+                timeElement.textContent = now.toLocaleTimeString('ar-SA');
+            }
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // إحصائيات ديناميكية (مثال)
+        setTimeout(() => {
+            const stats = document.querySelectorAll('.stat-card h3');
+            stats.forEach(stat => {
+                const finalValue = parseInt(stat.textContent);
+                let current = 0;
+                const increment = finalValue / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= finalValue) {
+                        current = finalValue;
+                        clearInterval(timer);
+                    }
+                    stat.textContent = Math.floor(current);
+                }, 20);
+            });
+        }, 500);
+    </script>
+</body>
+</html>

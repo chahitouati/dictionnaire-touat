@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معاينة الطلب - معجم توات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-image: url('/static/images/touat.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(8px);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        h1 { color: #2c3e50; text-align: center; }
+        .word { font-size: 2rem; font-weight: bold; color: #3498db; text-align: center; margin-bottom: 20px; }
+        .label { font-weight: bold; margin-top: 15px; color: #2c3e50; }
+        .content { background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 5px; }
+        .image-preview { max-width: 100%; max-height: 200px; border-radius: 10px; }
+        .audio-player { width: 100%; margin-top: 5px; }
+        .btn { display: inline-block; padding: 10px 20px; margin-top: 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-eye"></i> معاينة الطلب #{{ submission.id }}</h1>
+        
+        <div class="word">{{ submission.word_arabic }}</div>
+        
+        <div class="label">📖 التعريف:</div>
+        <div class="content">{{ submission.definition }}</div>
+        
+        {% if submission.example %}
+        <div class="label">💬 مثال للاستخدام:</div>
+        <div class="content">{{ submission.example }}</div>
+        {% endif %}
+        
+        <div class="label">📍 المنطقة:</div>
+        <div class="content">{{ submission.region }}</div>
+        
+        {% if submission.category %}
+        <div class="label">🏷️ المجال:</div>
+        <div class="content">{{ submission.category }}</div>
+        {% endif %}
+        
+        <div class="label">👤 مقدم الطلب:</div>
+        <div class="content">مستخدم #{{ submission.submitted_by }}</div>
+        
+        <div class="label">📅 تاريخ الإرسال:</div>
+        <div class="content">{{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        
+        <!-- عرض الصورة إذا وجدت -->
+        {% if submission.image_path %}
+        <div class="label">🖼️ الصورة:</div>
+        <div class="content">
+            <img src="{{ url_for('static', filename=submission.image_path) }}" class="image-preview">
+        </div>
+        {% endif %}
+        
+        <!-- عرض الصوت إذا وجد -->
+        {% if submission.audio_path %}
+        <div class="label">🎵 التسجيل الصوتي:</div>
+        <div class="content">
+            <audio controls class="audio-player">
+                <source src="{{ url_for('static', filename=submission.audio_path) }}">
+                متصفحك لا يدعم تشغيل الصوت
+            </audio>
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center;">
+            <a href="{{ url_for('admin_submissions') }}" class="btn">← العودة للطلبات</a>
+        </div>
+    </div>
+</body>
+</html>

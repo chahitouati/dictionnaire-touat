@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حرف {{ letter }} - معجم توات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            direction: rtl;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .letter-header {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .letter-display {
+            font-size: 5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .alphabet-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .letter-link {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .letter-link:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .letter-link.active {
+            background: #9b59b6;
+            color: white;
+            border-color: #9b59b6;
+        }
+        
+        .words-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .word-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-right: 4px solid #9b59b6;
+            transition: transform 0.3s;
+        }
+        
+        .word-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .word-arabic {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1rem;
+        }
+        
+        .stats {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+            border-right: 4px solid #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="letter-header">
+            <h1>الكلمات بحرف <span class="letter-display">{{ letter }}</span></h1>
+            <p>تصفح الكلمات التي تبدأ بحرف {{ letter }} في معجم اللهجة التواتية</p>
+        </div>
+        
+        <div class="stats">
+            <h3>عدد الكلمات: <strong>{{ words_count }}</strong></h3>
+        </div>
+        
+        <div class="alphabet-nav">
+            {% for l in 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي' %}
+            <a href="/by-letter/{{ l }}" 
+               class="letter-link {% if l == letter %}active{% endif %}">
+                {{ l }}
+            </a>
+            {% endfor %}
+        </div>
+        
+        {% if words %}
+        <div class="words-grid">
+            {% for word in words %}
+            <div class="word-card">
+                <div class="word-arabic">{{ word.word_arabic }}</div>
+                <p>{{ word.definition }}</p>
+                <div style="color: #7f8c8d; font-size: 0.9rem;">
+                    المنطقة: {{ word.region }}
+                    {% if word.category %} | المجال: {{ word.category }}{% endif %}
+                </div>
+                <a href="/word/{{ word.id }}" style="color: #9b59b6; text-decoration: none; font-size: 0.9rem;">
+                    عرض التفاصيل →
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>📭 لا توجد كلمات</h2>
+            <p>لا توجد كلمات تبدأ بحرف "{{ letter }}" في القاموس حالياً.</p>
+            <p>يمكنك المساهمة بإضافة كلمات جديدة أو تصفح حروف أخرى.</p>
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="/" class="back-link">← العودة للصفحة الرئيسية</a>
+            <a href="/search" class="back-link" style="background: #2ecc71;">🔍 بحث في القاموس</a>
+            <a href="/api/words" class="back-link" style="background: #e74c3c;">📊 جميع الكلمات (API)</a>
+        </div>
+    </div>
+    
+    <script>
+        // إضافة تأثير عند التمرير على الروابط
+        document.querySelectorAll('.letter-link').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = 'translateY(-3px)';
+                }
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        // تسليط الضوء على الحرف النشط
+        const activeLetter = document.querySelector('.letter-link.active');
+        if (activeLetter) {
+            activeLetter.style.boxShadow = '0 0 15px rgba(155, 89, 182, 0.5)';
+        }
+    </script>
+</body>
+</html>

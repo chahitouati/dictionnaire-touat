@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النسخ الاحتياطي - معجم توات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-image: url('/static/images/touat.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            direction: rtl;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(8px);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        .btn-backup {
+            background: #2ecc71;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+        .btn-backup:hover { background: #27ae60; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+        .btn-download {
+            background: #3498db;
+            color: white;
+            padding: 5px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn-download:hover { background: #2980b9; }
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        .btn-delete:hover { background: #c0392b; }
+        .btn-back {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-database"></i> النسخ الاحتياطي</h1>
+        
+        <form method="POST" action="{{ url_for('admin_backup') }}">
+            <button type="submit" class="btn-backup">
+                <i class="fas fa-plus-circle"></i> إنشاء نسخة احتياطية جديدة
+            </button>
+        </form>
+        
+        <h3><i class="fas fa-history"></i> النسخ الاحتياطية المتوفرة:</h3>
+        
+        {% if backups %}
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم الملف</th>
+                    <th>الحجم (KB)</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for backup in backups %}
+                <tr>
+                    <td>{{ backup.name }}</td>
+                    <td>{{ "%.2f"|format(backup.size) }}</td>
+                    <td>{{ backup.date }}</td>
+                    <td>
+                        <a href="/admin/backup/download/{{ backup.name }}" class="btn-download">
+                            <i class="fas fa-download"></i> تحميل
+                        </a>
+                        <a href="/admin/backup/delete/{{ backup.name }}" class="btn-delete" 
+                           onclick="return confirm('هل أنت متأكد من حذف هذا الملف؟')">
+                            <i class="fas fa-trash"></i> حذف
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-folder-open" style="font-size: 4rem;"></i>
+            <p>لا توجد نسخ احتياطية حالياً</p>
+            <p>انقر على "إنشاء نسخة احتياطية جديدة" لإنشاء أول نسخة</p>
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-right"></i> العودة للوحة التحكم
+            </a>
+        </div>
+    </div>
+</body>
+</html>

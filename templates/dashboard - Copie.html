@@ -1,0 +1,161 @@
+<!-- templates/admin/dashboard.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - معجم توات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            direction: rtl;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .admin-actions {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #2c3e50;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 2rem;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-header">
+            <h1>⚙️ لوحة تحكم المشرف</h1>
+            <p>مرحباً {{ current_user.username }}! آخر دخول: {{ current_user.created_at.strftime('%Y-%m-%d') }}</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div style="color: #3498db; font-size: 2.5rem;">👥</div>
+                <h3>{{ total_users }}</h3>
+                <p>المستخدمين المسجلين</p>
+            </div>
+            
+            <div class="stat-card">
+                <div style="color: #2ecc71; font-size: 2.5rem;">📚</div>
+                <h3>{{ total_words }}</h3>
+                <p>الكلمات في القاموس</p>
+            </div>
+            
+            <div class="stat-card">
+                <div style="color: #e74c3c; font-size: 2.5rem;">📥</div>
+                <h3>{{ pending_submissions }}</h3>
+                <p>طلبات في الانتظار</p>
+            </div>
+            
+            <div class="stat-card">
+                <div style="color: #f39c12; font-size: 2.5rem;">📈</div>
+                <h3>نشيط</h3>
+                <p>حالة النظام</p>
+            </div>
+        </div>
+        
+        <div class="admin-actions">
+            <h2>🚀 الإجراءات السريعة</h2>
+            <div class="action-grid">
+                <a href="/admin/submissions" class="action-btn">
+                    <div style="font-size: 2rem;">📋</div>
+                    <span>مراجعة الطلبات</span>
+                </a>
+                
+                <a href="/admin/users" class="action-btn">
+                    <div style="font-size: 2rem;">👤</div>
+                    <span>إدارة المستخدمين</span>
+                </a>
+                
+                <a href="/submit" class="action-btn">
+                    <div style="font-size: 2rem;">➕</div>
+                    <span>إضافة كلمة جديدة</span>
+                </a>
+                
+                <a href="/" class="action-btn">
+                    <div style="font-size: 2rem;">🏠</div>
+                    <span>عرض الموقع</span>
+                </a>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="/" class="back-link">← العودة للصفحة الرئيسية</a>
+            <a href="/logout" class="back-link" style="background: #e74c3c;">🚪 تسجيل الخروج</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - معجم توات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            direction: rtl;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+        
+        .test-account {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 تسجيل الدخول</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email" name="email" 
+                   autocomplete="off" required 
+                   placeholder="ادخل بريدك الإلكتروني">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" name="password" 
+                     autocomplete="new-password" required 
+                     placeholder="ادخل كلمة المرور">
+            </div>
+            
+            <button type="submit">تسجيل الدخول</button>
+        </form>
+        
+        <div class="test-account">
+            <p><strong>حساب تجريبي:</strong></p>
+            <p>البريد: <code>admin@touat.com</code></p>
+            <p>كلمة المرور: <code>admin123</code></p>
+        </div>
+        
+        <div class="links">
+            <p>ليس لديك حساب؟ <a href="/register">إنشاء حساب جديد</a></p>
+            <p><a href="/">← العودة للصفحة الرئيسية</a></p>
+        </div>
+    </div>
+    
+    <script>
+        // Focus sur le premier champ
+        document.getElementById('email').focus();
+        
+        // Afficher/masquer le mot de passe (optionnel)
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.createElement('button');
+        togglePassword.type = 'button';
+        togglePassword.textContent = '👁️';
+        togglePassword.style.cssText = `
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+        `;
+        
+        passwordInput.parentElement.style.position = 'relative';
+        passwordInput.parentElement.appendChild(togglePassword);
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+    </script>
+</body>
+</html>

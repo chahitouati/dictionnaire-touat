@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}الفيديوهات - معجم توات{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header" style="background: rgba(155,89,182,0.9); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center; color: white;">
+        <h1><i class="fas fa-video"></i> الفيديوهات التعليمية</h1>
+        <p>شاهد فيديوهات تعليمية عن لهجة توات</p>
+    </div>
+    
+    <div class="videos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem;">
+        {% for video in videos %}
+        <div class="video-card" style="background: rgba(255,255,255,0.9); border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
+            <a href="/video/{{ video.id }}" style="text-decoration: none; color: inherit;">
+                <div style="background: #2c3e50; height: 200px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fab fa-youtube" style="font-size: 4rem; color: #ff0000;"></i>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">{{ video.title }}</h3>
+                    <p style="color: #555; line-height: 1.6;">{{ video.description }}</p>
+                    <div style="color: #7f8c8d; font-size: 0.9rem; margin: 0.5rem 0;">
+                        <i class="fas fa-calendar"></i> {{ video.date }}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<style>
+        /* إزالة أي طبقات شفافة */
+.hero::before, .word-card::before, body::before {
+    display: none !important;
+}
+
+/* صناديق شفافة مع تأثير زجاجي */
+.hero, .alphabet-section, .stat, .word-card {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+
+
+/* النصوص تبقى داكنة وواضحة */
+.hero h1, .hero p,
+.alphabet-section h2,
+.stat h2, .stat p,
+.word-card h3, .word-card p {
+    color: #1a1a2e !important;
+}
+
+/* شريط التنقل */
+.navbar {
+    background: rgba(44, 62, 80, 0.95) !important;
+}
+</style>
+{% endblock %}

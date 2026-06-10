@@ -1,0 +1,610 @@
+<!-- templates/word_detail.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ word.word_arabic }} - معجم توات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* Word Detail Card */
+        .word-detail-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .word-detail-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #9b59b6, #2ecc71);
+        }
+        
+        .word-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f0f4f8;
+        }
+        
+        .word-arabic {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-family: 'Traditional Arabic', serif;
+        }
+        
+        .word-latin {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            direction: ltr;
+        }
+        
+        /* Image Section */
+        .image-section {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1.5rem 0;
+            border-right: 4px solid #9b59b6;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .image-container {
+            text-align: center;
+        }
+        
+        .word-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .word-image:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Audio Section */
+        .audio-section {
+            background: linear-gradient(135deg, #2ecc7115 0%, #27ae6015 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1.5rem 0;
+            border-right: 4px solid #2ecc71;
+        }
+        
+        .audio-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .word-audio {
+            flex: 1;
+            min-width: 250px;
+            outline: none;
+            border-radius: 30px;
+        }
+        
+        .play-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .play-btn:hover {
+            background: #27ae60;
+            transform: scale(1.05);
+        }
+        
+        /* Definition Box */
+        .definition-box {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border-right: 4px solid #3498db;
+        }
+        
+        .definition-label {
+            font-size: 1.1rem;
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .definition-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+        
+        /* Example Section */
+        .example-box {
+            background: #f0f7ff;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border-right: 4px solid #2ecc71;
+        }
+        
+        /* Metadata */
+        .metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .meta-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .meta-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .meta-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .btn-purple {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Similar Words */
+        .similar-words {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+        
+        .similar-words h3 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .similar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .similar-word {
+            background: #f8f9fa;
+            padding: 1.2rem;
+            border-radius: 10px;
+            border-right: 3px solid #3498db;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+        
+        .similar-word:hover {
+            transform: translateY(-3px);
+            background: #e8f4fc;
+        }
+        
+        .similar-arabic {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .similar-definition {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        /* Back Link */
+        .back-link {
+            display: inline-block;
+            margin: 2rem 0;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .word-detail-card {
+                padding: 2rem;
+            }
+            
+            .word-arabic {
+                font-size: 2.5rem;
+            }
+            
+            .metadata {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .similar-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .audio-container {
+                flex-direction: column;
+            }
+            
+            .word-audio {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">
+                <i class="fas fa-book-open"></i>
+                معجم اللهجة التواتية
+            </a>
+            <div class="nav-links">
+                <a href="/"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="/search"><i class="fas fa-search"></i> بحث</a>
+                <a href="/submit"><i class="fas fa-plus-circle"></i> إضافة كلمة</a>
+                {% if current_user.is_authenticated %}
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+                {% else %}
+                    <a href="/login"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Word Detail -->
+        <div class="word-detail-card">
+            <div class="word-header">
+                <div class="word-arabic">{{ word.word_arabic }}</div>
+                {% if word.word_latin %}
+                <div class="word-latin">{{ word.word_latin }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Image Section -->
+            {% if word.image_path %}
+            <div class="image-section">
+                <div class="section-title">
+                    <i class="fas fa-image"></i> صورة توضيحية
+                </div>
+                <div class="image-container">
+                    <img src="{{ url_for('static', filename=word.image_path) }}" 
+                         alt="{{ word.word_arabic }}"
+                         class="word-image"
+                         loading="lazy">
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Audio Section -->
+            {% if word.audio_path %}
+            <div class="audio-section">
+                <div class="section-title">
+                    <i class="fas fa-headphones"></i> الاستماع إلى النطق
+                </div>
+                <div class="audio-container">
+                    <audio controls class="word-audio" id="wordAudio">
+                        <source src="{{ url_for('static', filename=word.audio_path) }}" type="audio/mpeg">
+                        <source src="{{ url_for('static', filename=word.audio_path) }}" type="audio/wav">
+                        متصفحك لا يدعم تشغيل الصوت
+                    </audio>
+                    <button onclick="document.getElementById('wordAudio').play()" class="play-btn">
+                        <i class="fas fa-play"></i> تشغيل
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Definition -->
+            <div class="definition-box">
+                <div class="definition-label">
+                    <i class="fas fa-book"></i> التعريف
+                </div>
+                <div class="definition-text">{{ word.definition }}</div>
+            </div>
+            
+            <!-- Example (if exists) -->
+            {% if word.example %}
+            <div class="example-box">
+                <div class="definition-label">
+                    <i class="fas fa-comment-alt"></i> مثال للاستخدام
+                </div>
+                <div class="definition-text">{{ word.example }}</div>
+            </div>
+            {% endif %}
+            
+            <!-- Metadata -->
+            <div class="metadata">
+                <div class="meta-item">
+                    <span class="meta-label"><i class="fas fa-map-marker-alt"></i> المنطقة</span>
+                    <span class="meta-value">{{ word.region }}</span>
+                </div>
+                
+                {% if word.category %}
+                <div class="meta-item">
+                    <span class="meta-label"><i class="fas fa-tag"></i> المجال</span>
+                    <span class="meta-value">{{ word.category }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="meta-item">
+                    <span class="meta-label"><i class="fas fa-font"></i> الحرف</span>
+                    <span class="meta-value">{{ word.arabic_letter or word.word_arabic[0] }}</span>
+                </div>
+                
+                <div class="meta-item">
+                    <span class="meta-label"><i class="fas fa-calendar"></i> تاريخ الإضافة</span>
+                    <span class="meta-value">{{ word.created_at.strftime('%Y-%m-%d') if word.created_at else 'غير محدد' }}</span>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/by-letter/{{ word.word_arabic[0] }}" class="action-btn btn-primary">
+                    <i class="fas fa-font"></i> كلمات بنفس الحرف
+                </a>
+                <a href="/search?q={{ word.word_arabic }}" class="action-btn btn-success">
+                    <i class="fas fa-search"></i> بحث مشابه
+                </a>
+                <a href="/submit" class="action-btn btn-purple">
+                    <i class="fas fa-plus-circle"></i> إضافة كلمة جديدة
+                </a>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                <a href="/admin/submissions" class="action-btn" style="background: #e74c3c; color: white;">
+                    <i class="fas fa-edit"></i> تعديل الكلمة
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Similar Words -->
+        {% if similar_words %}
+        <div class="similar-words">
+            <h3><i class="fas fa-random"></i> كلمات مشابهة من نفس المنطقة</h3>
+            <div class="similar-grid">
+                {% for similar in similar_words %}
+                <a href="/word/{{ similar.id }}" class="similar-word">
+                    <div class="similar-arabic">
+                        {{ similar.word_arabic }}
+                        {% if similar.image_path %}
+                        <i class="fas fa-image" style="color: #9b59b6; font-size: 0.8rem;" title="يوجد صورة"></i>
+                        {% endif %}
+                        {% if similar.audio_path %}
+                        <i class="fas fa-headphones" style="color: #2ecc71; font-size: 0.8rem;" title="يوجد تسجيل صوتي"></i>
+                        {% endif %}
+                    </div>
+                    <div class="similar-definition">{{ similar.definition[:80] }}{% if similar.definition|length > 80 %}...{% endif %}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Back Link -->
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-right"></i> العودة للصفحة الرئيسية
+        </a>
+    </div>
+
+    <script>
+        // مشاركة الكلمة
+        function shareWord() {
+            const word = "{{ word.word_arabic }}";
+            const definition = "{{ word.definition }}";
+            const url = window.location.href;
+            
+            const text = `الكلمة: ${word}\nالتعريف: ${definition}\nرابط الكلمة: ${url}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: word,
+                    text: definition,
+                    url: url
+                });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('تم نسخ الكلمة والتعريف إلى الحافظة');
+                });
+            }
+        }
+        
+        // إضافة زر المشاركة
+        const actionButtons = document.querySelector('.action-buttons');
+        if (actionButtons) {
+            const shareBtn = document.createElement('a');
+            shareBtn.className = 'action-btn';
+            shareBtn.style.background = '#f39c12';
+            shareBtn.style.color = 'white';
+            shareBtn.href = '#';
+            shareBtn.onclick = shareWord;
+            shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> مشاركة الكلمة';
+            actionButtons.appendChild(shareBtn);
+        }
+        
+        // تمييز الكلمة الحالية في قائمة الكلمات المشابهة
+        document.querySelectorAll('.similar-word').forEach(item => {
+            if (item.querySelector('.similar-arabic').textContent.trim().startsWith("{{ word.word_arabic }}")) {
+                item.style.background = '#e8f4fc';
+                item.style.borderRight = '3px solid #2ecc71';
+            }
+        });
+        
+        // التمرير للأعلى
+        window.scrollTo(0, 0);
+        
+        // تحميل الصورة بتأثير fade-in
+        const wordImage = document.querySelector('.word-image');
+        if (wordImage) {
+            wordImage.style.opacity = '0';
+            wordImage.style.transition = 'opacity 0.5s';
+            wordImage.onload = function() {
+                this.style.opacity = '1';
+            };
+            if (wordImage.complete) {
+                wordImage.style.opacity = '1';
+            }
+        }
+    </script>
+</body>
+</html>
