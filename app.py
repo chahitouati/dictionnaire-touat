@@ -65,6 +65,20 @@ def load_user(user_id):
 # Créer les tables au démarrage
 with app.app_context():
     db.create_all()
+    # Créer le compte admin s'il n'existe pas
+    if User.query.filter_by(email='admin@touat.com').first() is None:
+        admin = User(
+            username='admin',
+            email='admin@touat.com',
+            password_hash=generate_password_hash('admin123'),
+            role='admin',
+            region='توات'
+        )
+        db.session.add(admin)
+        db.session.commit()
+        print("✅ Compte admin créé avec succès !")
+    else:
+        print("✅ Compte admin existe déjà")
     # Vérifier si la base est vide
     if Word.query.count() == 0:
         print("📚 Base de données vide, importation des mots...")
