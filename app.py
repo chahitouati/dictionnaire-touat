@@ -6,29 +6,37 @@ from werkzeug.utils import secure_filename
 import os
 import pandas
 from datetime import datetime
+import cloudinary
+import cloudinary.uploader
 
 
-
-# تكوين رفع الملفات (ضعها في بداية الملف بعد الاستيرادات)
+# Configuration des uploads
 UPLOAD_FOLDER_IMAGES = 'static/uploads/images'
 UPLOAD_FOLDER_AUDIO = 'static/uploads/audio'
 ALLOWED_EXTENSIONS_IMAGES = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 ALLOWED_EXTENSIONS_AUDIO = {'mp3', 'wav', 'ogg', 'm4a'}
 
-# إنشاء المجلدات إذا لم تكن موجودة
+# Créer les dossiers s'ils n'existent pas
 os.makedirs(UPLOAD_FOLDER_IMAGES, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER_AUDIO, exist_ok=True)
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
+
+# Configure Cloudinary (à mettre après app = Flask(__name__))
+cloudinary.config(
+    cloud_name = "dh5dp9oys",
+    api_key = "999272591473586", 
+    api_secret = "JUqfA_c9vGV-U2RzmCkuXIR08wI"
+)
+
+# Modifie la fonction save_file
 def save_file(file, folder, allowed_extensions):
     if file and file.filename and allowed_file(file.filename, allowed_extensions):
-        filename = secure_filename(file.filename)
-        unique_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{filename}"
-        filepath = os.path.join(folder, unique_name)
-        file.save(filepath)
-        return filepath.replace('static/', '')
+        # Upload vers Cloudinary
+        upload_result = cloudinary.uploader.upload(file, folder=folder)
+        return upload_result['secure_url']  # Retourne l'URL Cloudinary
     return None
 
 # Créer l'application
@@ -413,14 +421,7 @@ os.makedirs(UPLOAD_FOLDER_AUDIO, exist_ok=True)
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-def save_file(file, folder, allowed_extensions):
-    if file and file.filename and allowed_file(file.filename, allowed_extensions):
-        filename = secure_filename(file.filename)
-        unique_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{filename}"
-        filepath = os.path.join(folder, unique_name)
-        file.save(filepath)
-        return filepath.replace('static/', '').replace('\\', '/')
-    return None
+
 
 @app.context_processor
 def inject_background():
