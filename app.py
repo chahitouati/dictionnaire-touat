@@ -24,6 +24,13 @@ def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 
+
+# Créer l'application
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-123-change-me')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dictionary.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # Configure Cloudinary (à mettre après app = Flask(__name__))
 cloudinary.config(
     cloud_name = "dh5dp9oys",
@@ -38,12 +45,6 @@ def save_file(file, folder, allowed_extensions):
         upload_result = cloudinary.uploader.upload(file, folder=folder)
         return upload_result['secure_url']  # Retourne l'URL Cloudinary
     return None
-
-# Créer l'application
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-123-change-me')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dictionary.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialiser LoginManager
 login_manager = LoginManager(app)
