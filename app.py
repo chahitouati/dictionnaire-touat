@@ -142,6 +142,23 @@ def search():
                           results=words,
                           results_count=len(words))
 
+
+@app.route('/debug/media')
+@login_required
+def debug_media():
+    words = Word.query.limit(10).all()
+    result = []
+    for w in words:
+        result.append({
+            'id': w.id,
+            'word': w.word_arabic,
+            'image_path': w.image_path,
+            'audio_path': w.audio_path,
+            'image_is_url': w.image_path.startswith('http') if w.image_path else False,
+            'audio_is_url': w.audio_path.startswith('http') if w.audio_path else False
+        })
+    return jsonify(result)
+
 # ===== NAVIGATION PAR LETTRES =====
 
 @app.route('/by-letter/<letter>')
