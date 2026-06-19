@@ -142,6 +142,51 @@ def search():
                           results=words,
                           results_count=len(words))
 
+@app.route('/admin/link-media')
+@login_required
+def link_media():
+    """Lier les fichiers images/audio aux mots par nom"""
+    if current_user.role != 'admin':
+        return "Non autorisé", 403
+    
+    import os
+    words = Word.query.all()
+    linked_images = 0
+    linked_audio = 0
+    errors = []
+    
+    for word in words:
+        # Vérifier si une image existe
+        found_image = False
+        for ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp']:
+            image_path = f"uploads/images/{word.word_arabic}{ext}"
+            if os.path.exists(f"static/{image_path}"):
+                word.image_path = image_path
+                linked_images += 1
+                found_image = True
+                break
+        
+        # Vérifier si un audio existe
+        found_audio = False
+        for ext in ['.mp3', '.wav', '.ogg', '.m4a']:
+            audio_path = f"uploads/audio/{word.word_arabic}{ext}"
+            if os.path.exists(f"static/{audio_path}"):
+                word.audio_path = audio_path
+                linked_audio += 1
+                found_audio = True
+                break
+        
+        if not found_image and not found_audio:
+            errors.append(word.word_arabic)
+    
+    db.session.commit()
+    
+    result = f"""
+    ✅ {linked_images} images liées<br>
+    ✅ {linked_audio} audios liés<br>
+    ⚠️ {len(errors)} mots sans média: {', '.join(errors[:10])}
+    """
+    return result
 
 @app.route('/debug/media')
 @login_required
