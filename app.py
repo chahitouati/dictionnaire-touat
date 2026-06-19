@@ -23,7 +23,14 @@ os.makedirs(UPLOAD_FOLDER_AUDIO, exist_ok=True)
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-
+def save_file(file, folder, allowed_extensions):
+    if file and file.filename and allowed_file(file.filename, allowed_extensions):
+        filename = secure_filename(file.filename)
+        unique_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{filename}"
+        filepath = os.path.join(folder, unique_name)
+        file.save(filepath)
+        return filepath.replace('static/', '')
+    return None
 
 # Créer l'application
 app = Flask(__name__)
@@ -31,20 +38,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-123-change-me')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dictionary.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Configure Cloudinary (à mettre après app = Flask(__name__))
-cloudinary.config(
-    cloud_name = "dh5dp9oys",
-    api_key = "999272591473586", 
-    api_secret = "JUqfA_c9vGV-U2RzmCkuXIR08wI"
-)
 
-# Modifie la fonction save_file
-def save_file(file, folder, allowed_extensions):
-    if file and file.filename and allowed_file(file.filename, allowed_extensions):
-        # Upload vers Cloudinary
-        upload_result = cloudinary.uploader.upload(file, folder=folder)
-        return upload_result['secure_url']  # Retourne l'URL Cloudinary
-    return None
 
 # Initialiser LoginManager
 login_manager = LoginManager(app)
